@@ -2,8 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { Star } from "lucide-react";
-import Button from "@/components/Button";
-import SpinnerMini from "@/components/Loader";
 
 type Review = {
   userName: string;
@@ -17,23 +15,28 @@ type ListingReviewProps = {
 };
 
 const ListingReview: React.FC<ListingReviewProps> = ({ listingId, currentUser }) => {
-  const [reviews, setReviews] = useState<Review[]>([
-    { userName: "Ravi Kumar", rating: 5, comment: "Amazing stay! Highly recommend." },
-    { userName: "Ananya Sharma", rating: 4, comment: "Great place, but a bit pricey." },
-  ]);
+  const storageKey = `reviews-${listingId}`;
+  
+  // Load reviews from localStorage
+  const [reviews, setReviews] = useState<Review[]>(() => {
+    if (typeof window !== "undefined") {
+      const storedReviews = localStorage.getItem(storageKey);
+      return storedReviews ? JSON.parse(storedReviews) : [];
+    }
+    return [];
+  });
+
   const [newRating, setNewRating] = useState<number>(0);
   const [newComment, setNewComment] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [averageRating, setAverageRating] = useState<number>(0);
 
+  // Save reviews to localStorage whenever they change
   useEffect(() => {
-    if (reviews.length > 0) {
-      const total = reviews.reduce((acc, review) => acc + review.rating, 0);
-      setAverageRating(total / reviews.length);
-    } else {
-      setAverageRating(0);
+    if (typeof window !== "undefined") {
+      localStorage.setItem(storageKey, JSON.stringify(reviews));
     }
-  }, [reviews]);
+  }, [reviews, storageKey]); // Include storageKey in dependencies
+  
 
   const handleAddReview = () => {
     if (newRating === 0 || newComment.trim() === "") return;
@@ -46,25 +49,22 @@ const ListingReview: React.FC<ListingReviewProps> = ({ listingId, currentUser })
         comment: newComment,
       };
 
-      setReviews([...reviews, newReview]);
+      const updatedReviews = [...reviews, newReview];
+      setReviews(updatedReviews);
       setNewRating(0);
       setNewComment("");
       setIsLoading(false);
     }, 1000);
   };
 
+  // Calculate average rating
+  const averageRating =
+    reviews.length > 0 ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length : 0;
+
   return (
     <div className="mt-8 border-t pt-6">
       <h2 className="text-2xl font-semibold">Reviews & Ratings</h2>
-
-      {/* Display Average Rating */}
-      <div className="mt-2 flex items-center gap-2">
-        <span className="text-lg font-semibold">Average Rating:</span>
-        {[...Array(5)].map((_, i) => (
-          <Star key={i} size={20} className={i < Math.round(averageRating) ? "text-yellow-500" : "text-gray-300"} />
-        ))}
-        <span className="text-lg">{averageRating.toFixed(1)}</span>
-      </div>
+      <p className="text-lg font-medium text-gray-700">Average Rating: {averageRating.toFixed(1)} ⭐</p>
 
       {/* Existing Reviews */}
       <div className="mt-4 space-y-4">
@@ -99,16 +99,15 @@ const ListingReview: React.FC<ListingReviewProps> = ({ listingId, currentUser })
             onChange={(e) => setNewComment(e.target.value)}
           />
 
-          {/* Updated Submit Button with Reserve Button Style */}
+          {/* Updated Submit Button (Same as Reserve Button Style) */}
           <div className="mt-4 flex justify-end">
-            <Button
-              disabled={isLoading}
+            <button
               onClick={handleAddReview}
-              className="flex flex-row items-center justify-center h-[42px] "
-              size="large"
+              disabled={isLoading}
+              className="flex flex-row items-center justify-center h-[42px] bg-[#007bff] text-white px-6 rounded-lg hover:bg-[#0056b3] transition"
             >
-              {isLoading ? <SpinnerMini /> : <span>Submit Review</span>}
-            </Button>
+              {isLoading ? <span className="animate-pulse">Submitting...</span> : "Submit Review"}
+            </button>
           </div>
         </div>
       )}

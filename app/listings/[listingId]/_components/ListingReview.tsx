@@ -1,7 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Star } from "lucide-react";
+import Button from "@/components/Button";
+import SpinnerMini from "@/components/Loader";
 
 type Review = {
   userName: string;
@@ -22,6 +24,16 @@ const ListingReview: React.FC<ListingReviewProps> = ({ listingId, currentUser })
   const [newRating, setNewRating] = useState<number>(0);
   const [newComment, setNewComment] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [averageRating, setAverageRating] = useState<number>(0);
+
+  useEffect(() => {
+    if (reviews.length > 0) {
+      const total = reviews.reduce((acc, review) => acc + review.rating, 0);
+      setAverageRating(total / reviews.length);
+    } else {
+      setAverageRating(0);
+    }
+  }, [reviews]);
 
   const handleAddReview = () => {
     if (newRating === 0 || newComment.trim() === "") return;
@@ -44,6 +56,15 @@ const ListingReview: React.FC<ListingReviewProps> = ({ listingId, currentUser })
   return (
     <div className="mt-8 border-t pt-6">
       <h2 className="text-2xl font-semibold">Reviews & Ratings</h2>
+
+      {/* Display Average Rating */}
+      <div className="mt-2 flex items-center gap-2">
+        <span className="text-lg font-semibold">Average Rating:</span>
+        {[...Array(5)].map((_, i) => (
+          <Star key={i} size={20} className={i < Math.round(averageRating) ? "text-yellow-500" : "text-gray-300"} />
+        ))}
+        <span className="text-lg">{averageRating.toFixed(1)}</span>
+      </div>
 
       {/* Existing Reviews */}
       <div className="mt-4 space-y-4">
@@ -78,15 +99,16 @@ const ListingReview: React.FC<ListingReviewProps> = ({ listingId, currentUser })
             onChange={(e) => setNewComment(e.target.value)}
           />
 
-          {/* Updated Submit Button */}
+          {/* Updated Submit Button with Reserve Button Style */}
           <div className="mt-4 flex justify-end">
-            <button
-              onClick={handleAddReview}
+            <Button
               disabled={isLoading}
-              className="flex items-center justify-center h-[42px] bg-[#007bff] text-white px-6 rounded-lg hover:bg-[#0056b3] transition"
+              onClick={handleAddReview}
+              className="flex flex-row items-center justify-center h-[42px] "
+              size="large"
             >
-              {isLoading ? <span className="animate-pulse">Submitting...</span> : "Submit Review"}
-            </button>
+              {isLoading ? <SpinnerMini /> : <span>Submit Review</span>}
+            </Button>
           </div>
         </div>
       )}

@@ -68,16 +68,14 @@ const ListingPage = async ({ params: { listingId } }: { params: IParams }) => {
         />
       </ListingClient>
   
-      {/* Move Reviews Section to the Bottom */}
-      <section id="reviews" className="bg-gray-100 py-10 mt-10 border-t">
+      {/* Reviews Section */}
+      <section id="reviews" className="bg-white py-10 mt-10 border-t">
         <div className="max-w-4xl mx-auto px-4">
-          <h2 className="text-2xl font-semibold">Reviews & Ratings</h2>
           <ListingReview listingId={id} currentUser={currentUser} />
         </div>
       </section>
     </section>
   );
-  
 };
 
 export default ListingPage;

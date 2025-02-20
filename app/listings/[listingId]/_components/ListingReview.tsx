@@ -14,8 +14,6 @@ type ListingReviewProps = {
   currentUser?: { id: string; name?: string | null };
 };
 
-
-
 const ListingReview: React.FC<ListingReviewProps> = ({ listingId, currentUser }) => {
   const [reviews, setReviews] = useState<Review[]>([
     { userName: "Ravi Kumar", rating: 5, comment: "Amazing stay! Highly recommend." },
@@ -23,25 +21,29 @@ const ListingReview: React.FC<ListingReviewProps> = ({ listingId, currentUser })
   ]);
   const [newRating, setNewRating] = useState<number>(0);
   const [newComment, setNewComment] = useState<string>("");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const handleAddReview = () => {
     if (newRating === 0 || newComment.trim() === "") return;
 
-    const newReview: Review = {
-      userName: currentUser?.name || "Anonymous User",
-      rating: newRating,
-      comment: newComment,
-    };
+    setIsLoading(true);
+    setTimeout(() => {
+      const newReview: Review = {
+        userName: currentUser?.name || "Anonymous User",
+        rating: newRating,
+        comment: newComment,
+      };
 
-    setReviews([...reviews, newReview]);
-    setNewRating(0);
-    setNewComment("");
+      setReviews([...reviews, newReview]);
+      setNewRating(0);
+      setNewComment("");
+      setIsLoading(false);
+    }, 1000);
   };
 
   return (
     <div className="mt-8 border-t pt-6">
       <h2 className="text-2xl font-semibold">Reviews & Ratings</h2>
-      <p className="text-gray-500">Reviews for listing ID: {listingId}</p>
 
       {/* Existing Reviews */}
       <div className="mt-4 space-y-4">
@@ -75,9 +77,17 @@ const ListingReview: React.FC<ListingReviewProps> = ({ listingId, currentUser })
             value={newComment}
             onChange={(e) => setNewComment(e.target.value)}
           />
-          <button className="mt-2 px-4 py-2 bg-blue-500 text-white rounded-lg" onClick={handleAddReview}>
-            Submit Review
-          </button>
+
+          {/* Updated Submit Button */}
+          <div className="mt-4 flex justify-end">
+            <button
+              onClick={handleAddReview}
+              disabled={isLoading}
+              className="flex items-center justify-center h-[42px] bg-[#007bff] text-white px-6 rounded-lg hover:bg-[#0056b3] transition"
+            >
+              {isLoading ? <span className="animate-pulse">Submitting...</span> : "Submit Review"}
+            </button>
+          </div>
         </div>
       )}
       {!currentUser && <p className="text-red-500 mt-4">You must be logged in to leave a review.</p>}

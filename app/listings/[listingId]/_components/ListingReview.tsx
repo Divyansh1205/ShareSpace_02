@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Star } from "lucide-react";
+import Button from "@/components/Button"; // Import Button component
 
 type Review = {
   userName: string;
@@ -16,8 +17,7 @@ type ListingReviewProps = {
 
 const ListingReview: React.FC<ListingReviewProps> = ({ listingId, currentUser }) => {
   const storageKey = `reviews-${listingId}`;
-  
-  // Load reviews from localStorage
+
   const [reviews, setReviews] = useState<Review[]>(() => {
     if (typeof window !== "undefined") {
       const storedReviews = localStorage.getItem(storageKey);
@@ -30,13 +30,11 @@ const ListingReview: React.FC<ListingReviewProps> = ({ listingId, currentUser })
   const [newComment, setNewComment] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  // Save reviews to localStorage whenever they change
   useEffect(() => {
     if (typeof window !== "undefined") {
       localStorage.setItem(storageKey, JSON.stringify(reviews));
     }
-  }, [reviews, storageKey]); // Include storageKey in dependencies
-  
+  }, [reviews, storageKey]);
 
   const handleAddReview = () => {
     if (newRating === 0 || newComment.trim() === "") return;
@@ -49,15 +47,13 @@ const ListingReview: React.FC<ListingReviewProps> = ({ listingId, currentUser })
         comment: newComment,
       };
 
-      const updatedReviews = [...reviews, newReview];
-      setReviews(updatedReviews);
+      setReviews([...reviews, newReview]);
       setNewRating(0);
       setNewComment("");
       setIsLoading(false);
     }, 1000);
   };
 
-  // Calculate average rating
   const averageRating =
     reviews.length > 0 ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length : 0;
 
@@ -66,7 +62,6 @@ const ListingReview: React.FC<ListingReviewProps> = ({ listingId, currentUser })
       <h2 className="text-2xl font-semibold">Reviews & Ratings</h2>
       <p className="text-lg font-medium text-gray-700">Average Rating: {averageRating.toFixed(1)} ⭐</p>
 
-      {/* Existing Reviews */}
       <div className="mt-4 space-y-4">
         {reviews.map((review, index) => (
           <div key={index} className="border rounded-lg p-4">
@@ -81,7 +76,6 @@ const ListingReview: React.FC<ListingReviewProps> = ({ listingId, currentUser })
         ))}
       </div>
 
-      {/* Add New Review */}
       {currentUser && (
         <div className="mt-6">
           <h3 className="text-xl font-semibold">Leave a Review</h3>
@@ -99,15 +93,16 @@ const ListingReview: React.FC<ListingReviewProps> = ({ listingId, currentUser })
             onChange={(e) => setNewComment(e.target.value)}
           />
 
-          {/* Updated Submit Button (Same as Reserve Button Style) */}
+          {/* Updated Submit Button */}
           <div className="mt-4 flex justify-end">
-            <button
-              onClick={handleAddReview}
+            <Button
               disabled={isLoading}
-              className="flex flex-row items-center justify-center h-[42px] bg-[#007bff] text-white px-6 rounded-lg hover:bg-[#0056b3] transition"
+              onClick={handleAddReview}
+              className="flex flex-row items-center justify-center h-[42px]"
+              size="large"
             >
-              {isLoading ? <span className="animate-pulse">Submitting...</span> : "Submit Review"}
-            </button>
+              {isLoading ? <span className="animate-pulse">Submitting...</span> : <span>Submit Review</span>}
+            </Button>
           </div>
         </div>
       )}

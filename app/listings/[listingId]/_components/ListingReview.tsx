@@ -47,7 +47,7 @@ const RatingAndReview: React.FC<RatingAndReviewProps> = ({ productId, initialRev
       <div className="flex items-center gap-3">
         <span className="text-2xl font-bold">{calculateAverageRating()}</span>
         <div className="flex">
-          {[1, 2, 3, 4, 5].map((star) => (
+          {[1, 2, 3, 4, 5].map((star: number) => (
             <Star key={star} className={star <= rating ? 'text-yellow-500' : 'text-gray-300'} />
           ))}
         </div>

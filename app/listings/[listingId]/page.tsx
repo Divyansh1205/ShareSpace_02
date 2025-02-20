@@ -66,6 +66,9 @@ const ListingPage = async ({ params: { listingId } }: { params: IParams }) => {
           bathroomCount={bathroomCount}
           latlng={latlng}
         />
+
+        {/* Review Section Added */}
+        <ListingReview listingId={id} currentUser={currentUser} />
       </ListingClient>
     </section>
   );

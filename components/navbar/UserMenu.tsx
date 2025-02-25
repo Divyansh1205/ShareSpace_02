@@ -75,6 +75,10 @@ const UserMenu: React.FC<UserMenuProps> = ({ user }) => {
                   <Modal.Trigger name="Sign up">
                     <MenuItem label="Sign up" />
                   </Modal.Trigger>
+
+                  <Modal.Trigger name="Contact Us">
+                    <MenuItem label="Contact Us" />
+                  </Modal.Trigger>
                 </>
               )}
             </Menu.List>
@@ -84,6 +88,9 @@ const UserMenu: React.FC<UserMenuProps> = ({ user }) => {
           </Modal.Window>
           <Modal.Window name="Sign up">
             <AuthModal name="Sign up" />
+          </Modal.Window>
+          <Modal.Window name="Contact Us">
+            <AuthModal name="Contact Us" />
           </Modal.Window>
           <Modal.Window name="share">
             <RentModal />

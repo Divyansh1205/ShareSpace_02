@@ -92,7 +92,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ user }) => {
           <Modal.Window name="Contact Us">
             <AuthModal name="Contact Us" />
           </Modal.Window>
-          <Modal.Window name="share">
+          <Modal.Window name="share"> 
             <RentModal />
           </Modal.Window>
         </Modal>
